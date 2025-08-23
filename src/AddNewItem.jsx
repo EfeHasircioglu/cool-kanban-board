@@ -1,14 +1,14 @@
 import { addDays, format } from "date-fns";
 export default function AddNewItem({ taskList, setTasks }) {
   const tomorrow = addDays(new Date(), 1);
-  const formattedTomorrow = format(tomorrow, "dd.MM.yyyy");
+  const formattedTomorrow = format(tomorrow, "yyyy-MM-dd");
 
   function handleClick() {
     const newTask = {
       id: taskList.length + 1,
       title: "",
       status: "todo",
-      date: tomorrow,
+      date: formattedTomorrow,
       isEditing: true,
     };
     setTasks([

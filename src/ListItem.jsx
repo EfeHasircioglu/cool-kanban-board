@@ -1,11 +1,31 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, useRef } from "react";
 import { addDays, format } from "date-fns";
+import { DndContext, useDraggable } from "@dnd-kit/core";
 export default function ListItem({ task, setTasks, taskList }) {
   const [tempTitle, setTempTitle] = useState(task.title);
   const [tempDate, setTempDate] = useState(task.date);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [error, setError] = useState("");
   const dropdownRef = useRef(null);
+  /* her bir görevi draggable yapmak için olan kod */
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+
+    //button için dnd kontrolü: OLMADIIIIIIIIII
+    onPointerDown(e) {
+      const targetId = e.target.id;
+      if (targetId === "dropdown") {
+        e.preventDefault();
+      }
+    },
+  });
+
+  const style = {
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
+  };
   /* dropdown açıkken, dropdown dışına basınca kapanmasını sağlayacakk fonksiyon */
   useEffect(() => {
     function handleClickOutside(e) {
@@ -22,26 +42,30 @@ export default function ListItem({ task, setTasks, taskList }) {
     setTasks(taskList.filter((task) => task.id !== taskId));
   }
   function handleEditing(taskId) {
-    setTasks(
-      taskList.map((task) => {
-        if (task.id === taskId) {
-          if (!task.isEditing) {
-            //task için edit modu açılıyor
-            return { ...task, isEditing: true };
+    if (tempTitle.trim() !== "" && error === "") {
+      setTasks(
+        taskList.map((task) => {
+          if (task.id === taskId) {
+            if (!task.isEditing) {
+              //task için edit modu açılıyor
+              return { ...task, isEditing: true };
+            } else {
+              //task'ı sıfırdan oluşturduğumuz için bu durumda kaydediyoruz
+              return {
+                ...task,
+                title: tempTitle,
+                date: tempDate,
+                isEditing: false,
+              };
+            }
           } else {
-            //task'ı sıfırdan oluşturduğumuz için bu durumda kaydediyoruz
-            return {
-              ...task,
-              title: tempTitle,
-              date: tempDate,
-              isEditing: false,
-            };
+            return task; //eğer task id !=== bizim taskımızın id değilse o zaman task olduğu gibi kalsın
           }
-        } else {
-          return task; //eğer task id !=== bizim taskımızın id değilse o zaman task olduğu gibi kalsın
-        }
-      }) /* tasklar içerisinde arama yapılıyor, eğer task bizim istediğimiz task ise, verilerini bizim istediğimiz şekilde yapıp kaydediyor, değilse zaten hiç ellemiyor, olduğu gibi kalıyor */
-    );
+        }) /* tasklar içerisinde arama yapılıyor, eğer task bizim istediğimiz task ise, verilerini bizim istediğimiz şekilde yapıp kaydediyor, değilse zaten hiç ellemiyor, olduğu gibi kalıyor */
+      );
+    } else {
+      setError("Title cannot be empty");
+    }
   }
   function cancelEditing(taskId) {
     /* buradaki amacımız, eğer taskımız önceden kaydedilmiş ve edit butonundan değiştirilecek ise, o zaman sadece bu ekranı kapatıyor ve herhangi bir güncelleme yapmıyor ama eğer yeni eklenmiş bir görev ise, o zaman bu görevi discard ediyor  */
@@ -78,16 +102,25 @@ export default function ListItem({ task, setTasks, taskList }) {
               name="title"
               value={tempTitle}
               id="titleInput"
-              onChange={(e) => setTempTitle(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.trim() !== "") {
+                  setTempTitle(e.target.value);
+                  setError("");
+                } else {
+                  setTempTitle(e.target.value);
+                  setError("Title cannot be empty");
+                }
+              }}
             />
+            <span className="text-xs text-red-500 font-bold">{error}</span>
             <input
               className="border-1 border-white/10 bg-white/10 rounded-md p-1 pl-2"
               placeholder="Enter the due date"
               type="date"
               name="date"
-              min={new Date()}
               value={tempDate}
               id="dateInput"
+              min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) => setTempDate(e.target.value)}
             />
             <div className="flex flex-row gap-3">
@@ -114,12 +147,15 @@ export default function ListItem({ task, setTasks, taskList }) {
     </AnimatePresence>
   ) : (
     /* editlenebilir durumdaki itemler için */
-
-    <div className="relative p-2 m-1 bg-gray-900/60 rounded-md shadow-xl z-50">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative p-2 m-1 bg-gray-900/60 rounded-md shadow-xl"
+    >
       <div ref={dropdownRef}>
         <button
           className="inline cursor-pointer h-0 absolute right-0"
-          onClick={() => setDropdownOpen((prev) => !prev)}
+          onClick={(e) => setDropdownOpen((prev) => !prev)}
         >
           <svg
             width="27.5px"
@@ -148,7 +184,10 @@ export default function ListItem({ task, setTasks, taskList }) {
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="z-100"
             >
-              <div className="flex flex-col gap-1 absolute right-0 top-7 text-xs bg-black p-1 rounded-xl">
+              <div
+                id="dropdown"
+                className="flex flex-col gap-1 absolute right-0 top-7 text-xs bg-black p-1 rounded-xl"
+              >
                 <button
                   onClick={() => {
                     handleEditing(task.id);
@@ -172,7 +211,7 @@ export default function ListItem({ task, setTasks, taskList }) {
           )}
         </AnimatePresence>
       </div>
-      <div className="flex flex-col gap-2">
+      <div {...listeners} {...attributes} className="flex flex-col z-100 gap-2">
         <span className="text-lg">{task.title}</span>
         <span className="text-xs">{task.date}</span>
       </div>

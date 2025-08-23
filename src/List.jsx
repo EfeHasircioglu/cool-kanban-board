@@ -17,10 +17,10 @@ export default function List({
   };
   return (
     <div
-      className={`m-4 h-min rounded-md group shadow shadow-black z-50 ${bgColors[bgColor]}`}
+      className={`m-4 h-min rounded-md group shadow shadow-black z-0 ${bgColors[bgColor]}`}
     >
-      <div className="flex flex-col z-50">
-        <div className="px-4 z-50 py-2 flex flex-row justify-between items-center">
+      <div className="flex flex-col">
+        <div className="px-4 py-2 flex flex-row justify-between items-center">
           <div>{header}</div>
           {addSection && <AddNewItem taskList={taskList} setTasks={setTasks} />}
         </div>
