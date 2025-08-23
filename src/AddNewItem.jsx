@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { addDays, format } from "date-fns";
 export default function AddNewItem({ taskList, setTasks }) {
   const tomorrow = addDays(new Date(), 1);
@@ -9,7 +8,7 @@ export default function AddNewItem({ taskList, setTasks }) {
       id: taskList.length + 1,
       title: "",
       status: "todo",
-      date: formattedTomorrow,
+      date: tomorrow,
       isEditing: true,
     };
     setTasks([
@@ -18,7 +17,10 @@ export default function AddNewItem({ taskList, setTasks }) {
     ]); /* burada varolan array + yeni itemimiz ile yeni bir array oluşturuyoruz */
   }
   return (
-    <button onClick={handleClick} className="z-50 cursor-pointer">
+    <button
+      onClick={handleClick}
+      className="z-50 cursor-pointer hover:bg-white/20 p-0.5 rounded justify-self-center"
+    >
       <span>
         <svg
           width="21px"
@@ -28,6 +30,7 @@ export default function AddNewItem({ taskList, setTasks }) {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           color="#fff"
+          className="h-full w-full mx-auto"
         >
           <path
             d="M8 12H12M16 12H12M12 12V8M12 12V16"

@@ -2,7 +2,7 @@ import { title } from "motion/react-client";
 import { useState } from "react";
 import "./App.css";
 import List from "./List";
-
+/* yapılacaklar: drag & drop özelliği, genel olarak tarihle ilgili olan şeylerin düzeltilmesi, edit butonuna basınca gelen edit/delete dropdownunun z index sorununun düzeltilmesi, editi cancelleyinceki gibi bazı animasyonların düzeltilmesi ve daha smooth hale getirilmesi.  */
 function App() {
   const [tasks, setTasks] = useState([
     {

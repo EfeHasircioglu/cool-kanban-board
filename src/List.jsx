@@ -22,13 +22,7 @@ export default function List({
       <div className="flex flex-col z-50">
         <div className="px-4 z-50 py-2 flex flex-row justify-between items-center">
           <div>{header}</div>
-          <div>
-            {addSection && (
-              <div className="z-50">
-                <AddNewItem taskList={taskList} setTasks={setTasks} />
-              </div>
-            )}
-          </div>
+          {addSection && <AddNewItem taskList={taskList} setTasks={setTasks} />}
         </div>
         <AnimatePresence>
           {taskList
