@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, useRef } from "react";
-import { addDays, format } from "date-fns";
-import { DndContext, useDraggable } from "@dnd-kit/core";
+import { format } from "date-fns";
+import { useDraggable } from "@dnd-kit/core";
 export default function ListItem({ task, setTasks, taskList }) {
   const [tempTitle, setTempTitle] = useState(task.title);
   const [tempDate, setTempDate] = useState(task.date);
@@ -11,8 +11,7 @@ export default function ListItem({ task, setTasks, taskList }) {
   /* her bir görevi draggable yapmak için olan kod */
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
-
-    //button için dnd kontrolü: OLMADIIIIIIIIII
+    // button için dnd kontrolü
     onPointerDown(e) {
       const targetId = e.target.id;
       if (targetId === "dropdown") {
@@ -21,6 +20,7 @@ export default function ListItem({ task, setTasks, taskList }) {
     },
   });
 
+  /* burası kartları sürüklerken onların yerinin stil olarak da değişmesi için */
   const style = {
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
@@ -86,9 +86,8 @@ export default function ListItem({ task, setTasks, taskList }) {
     }
   }
   return task.isEditing ? (
-    <AnimatePresence>
+    <AnimatePresence key={task.id}>
       <motion.div
-        key={task.id}
         initial={{ opacity: 0, y: -2 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 2 }}

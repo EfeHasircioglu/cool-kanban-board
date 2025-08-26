@@ -5,7 +5,7 @@ export default function AddNewItem({ taskList, setTasks }) {
 
   function handleClick() {
     const newTask = {
-      id: taskList.length + 1,
+      id: crypto.randomUUID(),
       title: "",
       status: "todo",
       date: formattedTomorrow,
