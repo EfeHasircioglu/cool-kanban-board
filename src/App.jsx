@@ -1,23 +1,51 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import List from "./List";
+import Weekday from "./Weekday";
 import { DndContext } from "@dnd-kit/core";
 import { AnimatePresence, motion } from "motion/react";
 import Archive from "./Archive";
 //TODO: bi şey olunca archivedTasks'daki hiçbir şey görünmüyor ama buna neden olan şeyin ne olduğu hakkında hiçbir fikrim yok
 //TODO: görevlerin actions menüsünün z-index sıkıntısı var...
+// belki haftalık view eklemek güzel fikir olabilir
 function App() {
+  //haftalık view ile günlük view arasında state geçişi
+  const [viewMode, setViewMode] = useState("kanban");
+  const today = new Date(); // bugün
+  // bildirim ile ilgili şeyler
+  const [notification, setNotification] = useState({
+    message: "",
+    isVisible: false,
+  });
+  function showNotification() {
+    setNotification({ message: "Task moved to archived", isVisible: true });
+    setTimeout(() => {
+      setNotification({ message: "", isVisible: false });
+    }, 5000);
+  }
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
   });
+  //DEBUG İÇİN
+  function addTask() {
+    const newTask = {
+      id: crypto.randomUUID(),
+      title: "kedikedikedi bochi",
+      status: "todo",
+      date: "2024-08-20",
+      isEditing: false,
+    };
+    setTasks([
+      ...tasks,
+      newTask,
+    ]); /* burada varolan array + yeni itemimiz ile yeni bir array oluşturuyoruz */
+  }
   /* eski bi task yaratmak için, arşiv özelliğini test etmek için */
   const [isArchivedOpen, setArchivedOpen] = useState(false);
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   });
-  const today = new Date();
-
   const archivedTasks = tasks.filter(
     (task) => task.status === "done" && new Date(task.date) < today
   );
@@ -35,6 +63,11 @@ function App() {
     setTasks((tasks) =>
       tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     );
+    // notification check
+    const movedTask = tasks.find((t) => t.id === taskId);
+    if (movedTask && newStatus === "done" && new Date(movedTask.date) < today) {
+      showNotification();
+    }
   }
   return (
     <DndContext onDragEnd={handleDragEnd}>
@@ -52,9 +85,81 @@ function App() {
           }}
         />
         <div className="relative">
+          <div className="absolute flex flex-row gap-3 left-0 top-0 m-3">
+            <button
+              onClick={() => setViewMode("kanban")}
+              className="cursor-pointer transition-colors duration-300 hover:bg-white/10 rounded p-2"
+            >
+              <svg
+                width="24px"
+                height="24px"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                color="#fff"
+              >
+                <path
+                  d="M3 3.6V20.4C3 20.7314 3.26863 21 3.6 21H20.4C20.7314 21 21 20.7314 21 20.4V3.6C21 3.26863 20.7314 3 20.4 3H3.6C3.26863 3 3 3.26863 3 3.6Z"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M6 6L6 16"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M10 6V9"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M14 6V13"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+                <path
+                  d="M18 6V11"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+            <button
+              onClick={() => setViewMode("week")}
+              className="cursor-pointer transition-colors duration-300 hover:bg-white/10 rounded p-2"
+            >
+              <svg
+                width="24px"
+                height="24px"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                color="#fff"
+              >
+                <path
+                  d="M9 3H3.6C3.26863 3 3 3.26863 3 3.6V20.4C3 20.7314 3.26863 21 3.6 21H9M9 3V21M9 3H15M9 21H15M15 3H20.4C20.7314 3 21 3.26863 21 3.6V20.4C21 20.7314 20.7314 21 20.4 21H15M15 3V21"
+                  stroke="#fff"
+                  strokeWidth="1.5"
+                ></path>
+              </svg>
+            </button>
+          </div>
           <div
             onClick={(e) => setArchivedOpen((prev) => !prev)}
-            className="absolute right-0 top-0 m-3 p-2 cursor-pointer hover:bg-white/30 transition-colors duration-300 rounded z-100"
+            className="absolute right-0 top-0 m-3 p-2 cursor-pointer hover:bg-white/10 transition-colors duration-300 rounded z-100"
           >
             <svg
               width="24px"
@@ -68,28 +173,28 @@ function App() {
               <path
                 d="M7 6L17 6"
                 stroke="#fff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></path>
               <path
                 d="M7 9L17 9"
                 stroke="#fff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></path>
               <path
                 d="M9 17H15"
                 stroke="#fff"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></path>
               <path
                 d="M3 12H2.6C2.26863 12 2 12.2686 2 12.6V21.4C2 21.7314 2.26863 22 2.6 22H21.4C21.7314 22 22 21.7314 22 21.4V12.6C22 12.2686 21.7314 12 21.4 12H21M3 12V2.6C3 2.26863 3.26863 2 3.6 2H20.4C20.7314 2 21 2.26863 21 2.6V12M3 12H21"
                 stroke="#fff"
-                stroke-width="1.5"
+                strokeWidth="1.5"
               ></path>
             </svg>
           </div>
@@ -98,37 +203,56 @@ function App() {
               {isArchivedOpen && <Archive tasks={archivedTasks} />}
             </AnimatePresence>
           </div>
-        </div>
-        <div className="p-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[90%] md:mx-auto">
-          <List
-            bgColor="green"
-            header="To-do"
-            status="todo"
-            addSection
-            taskList={activeTasks}
-            setTasks={setTasks}
-          ></List>
-          <List
-            bgColor="blue"
-            header="In progress"
-            status="inProgress"
-            taskList={activeTasks}
-            setTasks={setTasks}
-          ></List>
-          <List
-            bgColor="red"
-            header="Done"
-            status="done"
-            taskList={activeTasks}
-            setTasks={setTasks}
-          ></List>
-          <button
-            onClick={() => addOldTask()}
-            className="z-100000 cursor-alias"
-          >
-            add old task:debug
-          </button>
-        </div>
+        </div>{" "}
+        {viewMode === "kanban" ? (
+          <div className="p-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[90%] md:mx-auto">
+            <List
+              bgColor="green"
+              header="To-do"
+              status="todo"
+              addSection
+              taskList={activeTasks}
+              setTasks={setTasks}
+            ></List>
+            <List
+              bgColor="blue"
+              header="In progress"
+              status="inProgress"
+              taskList={activeTasks}
+              setTasks={setTasks}
+            ></List>
+            <List
+              bgColor="red"
+              header="Done"
+              status="done"
+              taskList={activeTasks}
+              setTasks={setTasks}
+            ></List>
+            <button
+              onClick={() => addTask()}
+              className="z-100 cursor-pointer p-1 rounded bg-black active:bg-gray-900"
+            >
+              Create Task
+            </button>
+          </div>
+        ) : (
+          <div className="p-20 z-100 md:grid md:grid-cols-7 md:grid-rows-1 text-white md:w-[90%] md:mx-auto"></div>
+        )}
+        {notification.isVisible && (
+          <AnimatePresence>
+            <motion.div
+              className=" m-5 absolute bottom-0 left-50% translateX(-50%) z-10000"
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: 1, y: 2 }}
+              exit={{ opacity: 0, y: -2 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <div className="p-1 rounded w-fit text-white bg-black text-xl">
+                {notification.message}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
     </DndContext>
   );

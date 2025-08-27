@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { useDraggable } from "@dnd-kit/core";
 export default function ListItem({ task, setTasks, taskList }) {
+  const today = new Date();
   const [tempTitle, setTempTitle] = useState(task.title);
   const [tempDate, setTempDate] = useState(task.date);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function ListItem({ task, setTasks, taskList }) {
       }
     },
   });
+  //eğer bir task todo veya inProgressdeyse ve tarihi geçmişse o zaman tarih alanının arkaplanı kırmızı gözüksün
 
   /* burası kartları sürüklerken onların yerinin stil olarak da değişmesi için */
   const style = {
@@ -85,6 +87,13 @@ export default function ListItem({ task, setTasks, taskList }) {
       setTasks(taskList.filter((task) => task.id !== taskId));
     }
   }
+  //eğer task due ve tamamlanmamış ise tarih yerinin arkaplanını kırmızı yapmamız için ilk tarihi geçmiş taskları bulmamız lazım
+  const isTaskDue = (t) => {
+    const taskDate = new Date(t.date);
+    return (
+      (t.status === "todo" || t.status === "inProgress") && taskDate < today
+    );
+  };
   return task.isEditing ? (
     <AnimatePresence key={task.id}>
       <motion.div
@@ -211,8 +220,16 @@ export default function ListItem({ task, setTasks, taskList }) {
         </AnimatePresence>
       </div>
       <div {...listeners} {...attributes} className="flex flex-col z-100 gap-2">
-        <span className="text-lg">{task.title}</span>
-        <span className="text-xs">{task.date}</span>
+        <span className="text-lg mr-7">{task.title}</span>
+        <span
+          className={
+            isTaskDue(task)
+              ? "text-xs bg-red-700 w-fit px-1 rounded"
+              : "text-xs"
+          }
+        >
+          {task.date}
+        </span>
       </div>
     </div>
   );

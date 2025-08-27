@@ -12,7 +12,7 @@ export default function Archive({ tasks }) {
         <div className="z-10000 text-white text-lg p-5">
           <div className="text-white py-3 px-2 text-2xl">Past Tasks</div>
           {tasks.length === 0 ? (
-            <div>No past tasks</div>
+            <div className="px-2">No past tasks</div>
           ) : (
             tasks.map((task) => (
               <div className="p-2 hover:bg-white/10 border-1 flex flex-col gap-2 my-3 rounded border-white/30">
