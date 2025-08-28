@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import List from "./List";
-import Weekday from "./Weekday";
+import WeekdayView from "./WeekdayView";
 import { DndContext } from "@dnd-kit/core";
 import { AnimatePresence, motion } from "motion/react";
 import Archive from "./Archive";
@@ -203,41 +203,53 @@ function App() {
               {isArchivedOpen && <Archive tasks={archivedTasks} />}
             </AnimatePresence>
           </div>
-        </div>{" "}
-        {viewMode === "kanban" ? (
-          <div className="p-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[90%] md:mx-auto">
-            <List
-              bgColor="green"
-              header="To-do"
-              status="todo"
-              addSection
-              taskList={activeTasks}
-              setTasks={setTasks}
-            ></List>
-            <List
-              bgColor="blue"
-              header="In progress"
-              status="inProgress"
-              taskList={activeTasks}
-              setTasks={setTasks}
-            ></List>
-            <List
-              bgColor="red"
-              header="Done"
-              status="done"
-              taskList={activeTasks}
-              setTasks={setTasks}
-            ></List>
-            <button
-              onClick={() => addTask()}
-              className="z-100 cursor-pointer p-1 rounded bg-black active:bg-gray-900"
+        </div>
+        <AnimatePresence>
+          {viewMode === "kanban" ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
             >
-              Create Task
-            </button>
-          </div>
-        ) : (
-          <div className="p-20 z-100 md:grid md:grid-cols-7 md:grid-rows-1 text-white md:w-[90%] md:mx-auto"></div>
-        )}
+              <div className="p-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[90%] md:mx-auto">
+                <List
+                  bgColor="green"
+                  header="To-do"
+                  status="todo"
+                  addSection
+                  taskList={activeTasks}
+                  setTasks={setTasks}
+                ></List>
+                <List
+                  bgColor="blue"
+                  header="In progress"
+                  status="inProgress"
+                  taskList={activeTasks}
+                  setTasks={setTasks}
+                ></List>
+                <List
+                  bgColor="red"
+                  header="Done"
+                  status="done"
+                  taskList={activeTasks}
+                  setTasks={setTasks}
+                ></List>
+                <button
+                  onClick={() => addTask()}
+                  className="z-100 cursor-pointer p-1 rounded bg-black active:bg-gray-900"
+                >
+                  Create Task
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="pt-20">
+              <WeekdayView taskList={activeTasks}></WeekdayView>
+            </div>
+          )}
+        </AnimatePresence>
+
         {notification.isVisible && (
           <AnimatePresence>
             <motion.div
