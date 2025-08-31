@@ -43,6 +43,7 @@ export default function List({
                   exit={{ opacity: 0, y: 2 }}
                 >
                   <ListItem
+                    isWeeklyView={false}
                     key={task.id}
                     task={task}
                     setTasks={setTasks}

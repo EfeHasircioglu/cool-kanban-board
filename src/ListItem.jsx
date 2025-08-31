@@ -2,12 +2,14 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { useDraggable } from "@dnd-kit/core";
-export default function ListItem({ task, setTasks, taskList }) {
+export default function ListItem({ task, setTasks, taskList, isWeeklyView }) {
   const today = new Date();
   const [tempTitle, setTempTitle] = useState(task.title);
   const [tempDate, setTempDate] = useState(task.date);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [error, setError] = useState("");
+  const [renderStatus, setRenderStatus] = useState("");
+  const [renderBgColor, setRenderBgColor] = useState("");
   const dropdownRef = useRef(null);
   /* her bir görevi draggable yapmak için olan kod */
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -94,6 +96,20 @@ export default function ListItem({ task, setTasks, taskList }) {
       (t.status === "todo" || t.status === "inProgress") && taskDate < today
     );
   };
+  //taskın statusunun renderlenmesinin daha güzel olması için onu bir state'de saklıyoruz
+  useEffect(() => {
+    if (task.status === "inProgress") {
+      setRenderStatus("In progress");
+      setRenderBgColor("bg-blue-700");
+    } else if (task.status === "done") {
+      setRenderStatus("done");
+      setRenderBgColor("bg-green-700");
+    } else if (task.status === "todo") {
+      setRenderStatus("To do");
+      setRenderBgColor("bg-red-700");
+    }
+  }, []);
+
   return task.isEditing ? (
     <AnimatePresence key={task.id}>
       <motion.div
@@ -154,11 +170,11 @@ export default function ListItem({ task, setTasks, taskList }) {
       </motion.div>
     </AnimatePresence>
   ) : (
-    /* editlenebilir durumdaki itemler için */
+    /* editlenebilir durumda olmayan itemler için */
     <div
       ref={setNodeRef}
       style={style}
-      className="relative p-2 m-1 bg-gray-900/60 rounded-md shadow-xl"
+      className="relative p-2 m-1 bg-gray-900/60 rounded-md shadow-xl z-100"
     >
       <div ref={dropdownRef}>
         <button
@@ -221,15 +237,23 @@ export default function ListItem({ task, setTasks, taskList }) {
       </div>
       <div {...listeners} {...attributes} className="flex flex-col z-100 gap-2">
         <span className="text-lg mr-7">{task.title}</span>
-        <span
-          className={
-            isTaskDue(task)
-              ? "text-xs bg-red-700 w-fit px-1 rounded"
-              : "text-xs"
-          }
-        >
-          {task.date}
-        </span>
+        {isWeeklyView ? (
+          <div>
+            <span className={`${renderBgColor} p-0.5 rounded-lg text-xs px-2`}>
+              {renderStatus}
+            </span>
+          </div>
+        ) : (
+          <span
+            className={
+              isTaskDue(task)
+                ? "text-xs bg-red-700 w-fit px-1 rounded"
+                : "text-xs"
+            }
+          >
+            {task.date}
+          </span>
+        )}
       </div>
     </div>
   );

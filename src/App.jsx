@@ -59,14 +59,24 @@ function App() {
     if (!over) return;
     const taskId = active.id;
     const newStatus = over.id;
-
-    setTasks((tasks) =>
-      tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
-    );
-    // notification check
-    const movedTask = tasks.find((t) => t.id === taskId);
-    if (movedTask && newStatus === "done" && new Date(movedTask.date) < today) {
-      showNotification();
+    const newDate = over.id;
+    if (viewMode === "kanban") {
+      setTasks((tasks) =>
+        tasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+      );
+      // notification check
+      const movedTask = tasks.find((t) => t.id === taskId);
+      if (
+        movedTask &&
+        newStatus === "done" &&
+        new Date(movedTask.date) < today
+      ) {
+        showNotification();
+      }
+    } else if (viewMode === "week") {
+      setTasks((tasks) =>
+        tasks.map((t) => (t.id === taskId ? { ...t, date: newDate } : t))
+      );
     }
   }
   return (
@@ -212,7 +222,7 @@ function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
             >
-              <div className="p-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[90%] md:mx-auto">
+              <div className="p-10 py-20 z-100 md:grid md:grid-cols-3 md:grid-rows-1 text-white md:w-[95%] md:mx-auto">
                 <List
                   bgColor="green"
                   header="To-do"
@@ -244,16 +254,19 @@ function App() {
               </div>
             </motion.div>
           ) : (
-            <div className="pt-20">
-              <WeekdayView taskList={activeTasks}></WeekdayView>
+            <div className="pt-20 z-0">
+              <WeekdayView
+                setTasks={setTasks}
+                taskList={activeTasks}
+              ></WeekdayView>
             </div>
           )}
         </AnimatePresence>
-
-        {notification.isVisible && (
-          <AnimatePresence>
+        <AnimatePresence>
+          {notification.isVisible && (
             <motion.div
-              className=" m-5 absolute bottom-0 left-50% translateX(-50%) z-10000"
+              key="notification"
+              className=" m-5 absolute bottom-0 left-1/2 -translate-x-1/2 z-10000"
               initial={{ opacity: 0, y: 0 }}
               animate={{ opacity: 1, y: 2 }}
               exit={{ opacity: 0, y: -2 }}
@@ -263,8 +276,8 @@ function App() {
                 {notification.message}
               </div>
             </motion.div>
-          </AnimatePresence>
-        )}
+          )}
+        </AnimatePresence>
       </div>
     </DndContext>
   );
