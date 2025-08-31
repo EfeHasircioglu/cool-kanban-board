@@ -26,21 +26,6 @@ function App() {
     const saved = localStorage.getItem("tasks");
     return saved ? JSON.parse(saved) : [];
   });
-  //DEBUG İÇİN
-  function addTask() {
-    const newTask = {
-      id: crypto.randomUUID(),
-      title: "bocchi the rock is peak",
-      status: "todo",
-      date: "2025-08-20",
-      isEditing: false,
-    };
-    setTasks([
-      ...tasks,
-      newTask,
-    ]); /* burada varolan array + yeni itemimiz ile yeni bir array oluşturuyoruz */
-  }
-  /* eski bi task yaratmak için, arşiv özelliğini test etmek için */
   const [isArchivedOpen, setArchivedOpen] = useState(false);
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -244,12 +229,6 @@ function App() {
                   taskList={activeTasks}
                   setTasks={setTasks}
                 ></List>
-                <button
-                  onClick={() => addTask()}
-                  className="z-100 cursor-pointer p-1 rounded bg-black active:bg-gray-900"
-                >
-                  DEBUG: Create Task
-                </button>
               </div>
             </motion.div>
           ) : (
