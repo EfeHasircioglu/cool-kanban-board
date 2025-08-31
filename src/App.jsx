@@ -151,7 +151,7 @@ function App() {
               </svg>
             </button>
           </div>
-          <div
+          <button
             onClick={(e) => setArchivedOpen((prev) => !prev)}
             className="absolute right-0 top-0 m-3 p-2 cursor-pointer hover:bg-white/10 transition-colors duration-300 rounded z-100"
           >
@@ -191,7 +191,7 @@ function App() {
                 strokeWidth="1.5"
               ></path>
             </svg>
-          </div>
+          </button>
           <div className="relative">
             <AnimatePresence>
               {isArchivedOpen && <Archive tasks={archivedTasks} />}
