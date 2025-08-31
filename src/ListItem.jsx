@@ -102,7 +102,7 @@ export default function ListItem({ task, setTasks, taskList, isWeeklyView }) {
       setRenderStatus("In progress");
       setRenderBgColor("bg-blue-700");
     } else if (task.status === "done") {
-      setRenderStatus("done");
+      setRenderStatus("Done");
       setRenderBgColor("bg-green-700");
     } else if (task.status === "todo") {
       setRenderStatus("To do");
