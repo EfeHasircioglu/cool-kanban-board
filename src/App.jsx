@@ -31,9 +31,9 @@ function App() {
   function addTask() {
     const newTask = {
       id: crypto.randomUUID(),
-      title: "kedikedikedi bochi",
+      title: "bocchi the rock is peak",
       status: "todo",
-      date: "2024-08-20",
+      date: "2025-08-20",
       isEditing: false,
     };
     setTasks([
