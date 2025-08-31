@@ -8,7 +8,7 @@ export default function Archive({ tasks }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
-      <div className="bg-black/80 backdrop-blur-md shadow-lg z-1000 h-auto max-h-[80vh] overflow-auto w-[50vw] absolute right-3 top-16 rounded">
+      <div className="bg-black/80 backdrop-blur-md shadow-lg z-100000 h-auto max-h-[80vh] overflow-auto w-[50vw] absolute right-3 top-16 rounded">
         <div className="z-10000 text-white text-lg p-5">
           <div className="text-white py-3 px-2 text-2xl">Past Tasks</div>
           {tasks.length === 0 ? (

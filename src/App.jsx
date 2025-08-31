@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "motion/react";
 import Archive from "./Archive";
 //TODO: bi şey olunca archivedTasks'daki hiçbir şey görünmüyor ama buna neden olan şeyin ne olduğu hakkında hiçbir fikrim yok
 //TODO: görevlerin actions menüsünün z-index sıkıntısı var...
-// belki haftalık view eklemek güzel fikir olabilir
 function App() {
   //haftalık view ile günlük view arasında state geçişi
   const [viewMode, setViewMode] = useState("kanban");
@@ -81,7 +80,7 @@ function App() {
   }
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="min-h-screen w-full bg-[#0a0a0a] relative">
+      <div className="min-h-screen w-full select-none bg-[#0a0a0a] relative">
         {/* Cosmic Aurora */}
         <div
           className="absolute inset-0 z-0"
@@ -249,7 +248,7 @@ function App() {
                   onClick={() => addTask()}
                   className="z-100 cursor-pointer p-1 rounded bg-black active:bg-gray-900"
                 >
-                  Create Task
+                  DEBUG: Create Task
                 </button>
               </div>
             </motion.div>

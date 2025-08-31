@@ -135,7 +135,7 @@ export default function Weekday({ taskList, setTasks }) {
             const dayID = format(date, "yyyy-MM-dd");
             const { setNodeRef } = useDroppable({ id: dayID });
             return (
-              <motion.div layout className="w-[100%] lg:w-[15%] z-10">
+              <motion.div className="w-[100%] lg:w-[15%] z-10">
                 <div className="h-full" key={dayID} ref={setNodeRef}>
                   <h3 className="text-center py-2 bg-black/50 z-10">{dayID}</h3>
                   <div className="bg-[#191919] border-gray-600/20 border-1 min-h-[100%] z-10">
