@@ -1,6 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Krona+One&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 @theme {
-  --font-header: "Krono One";
+  --font-header: "Krona One", sans-serif;
   --default-font-family: "Montserrat";
+  --font-sans: "Montserrat", sans-serif;
+}
+* {
+  font-weight: 500;
 }
