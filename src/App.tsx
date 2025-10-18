@@ -1,13 +1,16 @@
 /* bu uygulamada main butonlar, componentler falan olacak */
 import { Route, Switch, useLocation } from "wouter";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import { useMemo } from "react";
 import Kanban from "./Kanban";
 import WeeklyView from "./WeeklyView";
 import { forwardRef, useEffect, useState } from "react";
 import { useTasks } from "./store";
 import type { Task } from "./taskDb";
+import KanbanTask from "./KanbanTask";
 import { AnimatePresence, motion } from "motion/react";
 import DatePicker from "react-datepicker";
+import { db } from "./taskDb";
 import {
   Popover,
   PopoverButton,
@@ -18,14 +21,31 @@ import {
 } from "@headlessui/react";
 import "react-datepicker/dist/react-datepicker.min.css";
 import EditMenu from "./EditMenu";
-//TODO: date popover çalışmıyor, performans açısından geliştirilmesi gerek uygulamanın, bir de editleme ve silme işlemleri yapılacak
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  TouchSensor,
+  useSensors,
+  MouseSensor,
+} from "@dnd-kit/core";
+import { useLiveQuery } from "dexie-react-hooks";
+//TODO: weekly view'deki tasklar için editleme ve silme
+//TODO: weekly view hafta geçişleri ve ona göre render
+//TODO?: belki weekly view'de de drag & drop
+//TODO: normal task list görünümünde olan bir kısım (ve orada tasklar farklı şekillerde filtrelenebiliyor)
+//TODO: dark mode
 function App() {
-  /* task tipi tanımı, bu custom bir type */
+  /* bazı küçük şeyler için state'ler */
   const [location, setLocation] = useLocation();
   const [isAddOpen, setIsAddOpen] = useState<Boolean>(false);
   const [taskNameValue, setTaskNameValue] = useState<string>("");
   const [taskDescValue, setTaskDescValue] = useState<string>("");
   const [titleError, setTitleError] = useState<string>("");
+  const [droppedTask, setDroppedTask] = useState<Task>();
+  /* tasks içerisinden seçim yapabilmemiz için */
+  const rawTasks = useLiveQuery(() => db.tasks.toArray()) || [];
+  const tasks: Task[] = useMemo(() => rawTasks, [rawTasks]);
   /* date inputu butonu için */
   type dateInputProps = {
     className?: string;
@@ -77,23 +97,79 @@ function App() {
   function goToWeekly() {
     setLocation("/weekly");
   }
+
   /* eğer add modal kapanırsa veya yeni bir task eklenirse içindekiler temizlensin */
   useEffect(() => {
     setTaskNameValue("");
     setTaskDescValue("");
+    setTitleError("");
     setSelectedDate(new Date()); // bugün
   }, [isAddOpen]);
   /* to-do durumunda olacak, kullanıcının girdiği verilere sahip yeni bir task oluşturan fonksiyon  */
   function addNewTask() {
     const newTask: Task = {
       _id: crypto.randomUUID(),
-      title: taskNameValue,
-      description: taskDescValue,
+      title: taskNameValue.trim(),
+      description: taskDescValue.trim(),
       dueDate: selectedDate || new Date(),
       state: "todo",
     };
     addTask(newTask);
     setIsAddOpen(false);
+  }
+  /* dokumna arayüzü içeren cihazlarda drag & drop çalışması için */
+  const mouseSensor = useSensor(MouseSensor);
+  const touchSensor = useSensor(TouchSensor);
+  const sensors = useSensors(mouseSensor, touchSensor);
+
+  function handleDragStart(event: any) {
+    const droppedTaskId: string = event.active.id.split("/")[0];
+    setDroppedTask(tasks?.find((t) => t._id === droppedTaskId));
+  }
+  /* drag&drop fonksiyonunda drag bitişinde kanban tasklarının statuslarını değiştiriyoruz */
+  function handleDragEnd(event: any) {
+    if (event.over) {
+      if (!droppedTask) return;
+
+      switch (event.over.id) {
+        case "droppable-todo":
+          const updatedTaskTodo: Task = {
+            _id: droppedTask._id,
+            title: droppedTask.title,
+            description: droppedTask.description,
+            dueDate: droppedTask.dueDate,
+            state: "todo",
+          };
+          updateTask(updatedTaskTodo, droppedTask);
+          setDroppedTask(undefined);
+          break;
+        case "droppable-inprogress":
+          const updatedTaskInprogress: Task = {
+            _id: droppedTask._id,
+            title: droppedTask.title,
+            description: droppedTask.description,
+            dueDate: droppedTask.dueDate,
+            state: "inProgress",
+          };
+          updateTask(updatedTaskInprogress, droppedTask);
+          setDroppedTask(undefined);
+
+          break;
+        case "droppable-done":
+          const updatedTaskDone: Task = {
+            _id: droppedTask._id,
+            title: droppedTask.title,
+            description: droppedTask.description,
+            dueDate: droppedTask.dueDate,
+            state: "done",
+          };
+          updateTask(updatedTaskDone, droppedTask);
+          setDroppedTask(undefined);
+
+          break;
+        default:
+      }
+    }
   }
   /* edit fonksiyonu da burada, bu tarz fonksiyonlar toplu yerde olsun diye */
   function editTask() {
@@ -362,19 +438,36 @@ function App() {
           </div>
         </Dialog>
         <main>
-          {/* mode="wait", bir animasyon bitmeden diğerini başlamamasını sağlıyor */}
-          <AnimatePresence mode="wait">
-            <Switch key={location}>
-              <Route path="/kanban" component={Kanban}></Route>
-              <Route path="/weekly" component={WeeklyView}></Route>
-            </Switch>
-          </AnimatePresence>
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {/* mode="wait", bir animasyon bitmeden diğerini başlamamasını sağlıyor */}
+            <AnimatePresence mode="wait">
+              <Switch key={location}>
+                <Route path="/kanban" component={Kanban}></Route>
+                <Route path="/weekly" component={WeeklyView}></Route>
+              </Switch>
+            </AnimatePresence>
+            <DragOverlay dropAnimation={null}>
+              {droppedTask && (
+                <KanbanTask
+                  isOverlay={true}
+                  key={droppedTask._id}
+                  title={droppedTask.title}
+                  date={droppedTask.dueDate}
+                  description={droppedTask.description}
+                  task={droppedTask}
+                ></KanbanTask>
+              )}
+            </DragOverlay>
+          </DndContext>
         </main>
       </div>
       <AnimatePresence>
         {isEditOpen && <EditMenu editFunction={editTask} />}
       </AnimatePresence>
-
       <Toaster></Toaster>
     </div>
   );

@@ -4,9 +4,23 @@ import KanbanTask from "./KanbanTask";
 import { db } from "./taskDb";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo } from "react";
+import { useDroppable } from "@dnd-kit/core";
 export default function Kanban() {
   const rawTasks = useLiveQuery(() => db.tasks.toArray()) || [];
   const tasks: Task[] = useMemo(() => rawTasks, [rawTasks]);
+
+  /* droppable areas için olan kodlar */
+  const { setNodeRef: setTodoDroppableRef } = useDroppable({
+    id: "droppable-todo",
+  });
+  const { setNodeRef: setInprogressDroppableRef } = useDroppable({
+    id: "droppable-inprogress",
+  });
+  const { setNodeRef: setDoneDroppableRef } = useDroppable({
+    id: "droppable-done",
+  });
+  /* bugün */
+  const today = new Date();
   return (
     <AnimatePresence>
       <motion.div
@@ -16,27 +30,76 @@ export default function Kanban() {
       >
         <div className="px-5 py-10">
           <div className="grid grid-cols-3 gap-3 w-full font-header">
-            <div className="bg-[#fff1e6]/50 backdrop-blur-2xl h-auto p-1.5 rounded-lg">
+            <div
+              ref={setTodoDroppableRef}
+              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+            >
               <div className="mb-1 p-1.5">To-Do</div>
               <div className="font-sans flex flex-col gap-2">
-                {tasks.map((task: Task) => (
-                  <motion.div key={task._id}>
-                    <KanbanTask
-                      key={task._id}
-                      title={task.title}
-                      date={task.dueDate}
-                      description={task.description}
-                      task={task}
-                    />
-                  </motion.div>
-                ))}
+                {tasks
+                  .filter((task: Task) => task.state === "todo")
+                  .map((task: Task) => (
+                    <motion.div key={task._id}>
+                      <KanbanTask
+                        isOverlay={false}
+                        key={task._id}
+                        title={task.title}
+                        date={task.dueDate}
+                        description={task.description}
+                        task={task}
+                      />
+                    </motion.div>
+                  ))}
               </div>
             </div>
-            <div className="bg-[#fff1e6]/50 backdrop-blur-2xl h-min p-1.5 rounded-lg">
+
+            <div
+              ref={setInprogressDroppableRef}
+              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+            >
               <div className="mb-1 p-1.5">In Progress</div>
+              <div className="font-sans flex flex-col gap-2">
+                {tasks
+                  .filter((task: Task) => task.state === "inProgress")
+                  .map((task: Task) => (
+                    <motion.div key={task._id}>
+                      <KanbanTask
+                        isOverlay={false}
+                        key={task._id}
+                        title={task.title}
+                        date={task.dueDate}
+                        description={task.description}
+                        task={task}
+                      />
+                    </motion.div>
+                  ))}
+              </div>
             </div>
-            <div className="bg-[#fff1e6]/50 backdrop-blur-2xl h-min p-1.5 rounded-lg">
+
+            <div
+              ref={setDoneDroppableRef}
+              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+            >
               <div className="mb-1 p-1.5">Done</div>
+              <div className="font-sans flex flex-col gap-2">
+                {tasks
+                  .filter(
+                    (task: Task) =>
+                      task.state === "done" && task.dueDate < today
+                  )
+                  .map((task: Task) => (
+                    <motion.div key={task._id}>
+                      <KanbanTask
+                        isOverlay={false}
+                        key={task._id}
+                        title={task.title}
+                        date={task.dueDate}
+                        description={task.description}
+                        task={task}
+                      />
+                    </motion.div>
+                  ))}
+              </div>
             </div>
           </div>
         </div>

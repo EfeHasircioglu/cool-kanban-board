@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { db } from "./taskDb";
 import type { Task } from "./taskDb";
-import { useLiveQuery } from "dexie-react-hooks";
 
 interface TaskStore {
   syncing: boolean;
