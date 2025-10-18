@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { db } from "./taskDb";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Task } from "./taskDb";
 import WeeklyViewTask from "./WeeklyViewTask";
 export default function WeeklyView() {
@@ -98,7 +98,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekMonDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekTueDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekWedDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekThrsDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekFriDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekSatDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function WeeklyView() {
                   t.dueDate.toLocaleDateString().split("T")[0] === weekSunDate
               )
               .map((task: Task) => (
-                <WeeklyViewTask task={task} />
+                <WeeklyViewTask key={task._id} task={task} />
               ))}
           </div>
         </div>
