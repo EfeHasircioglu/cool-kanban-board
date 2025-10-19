@@ -1,41 +1,55 @@
 import { motion } from "motion/react";
 import { db } from "./taskDb";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Task } from "./taskDb";
 import WeeklyViewTask from "./WeeklyViewTask";
 export default function WeeklyView() {
   const rawTasks = useLiveQuery(() => db.tasks.toArray()) || [];
   const tasks: Task[] = useMemo(() => rawTasks, [rawTasks]);
-  /* calculating the first day of the week */
-  const weekDates = useMemo(() => {
-    const date = new Date(); /* bugünün tam tarihi */
-    const today: number = date.getDay(); /* bugünün günü */
-    const diff = today === 0 ? 6 : today - 1; /* pazartesi için ayarlama */
-    let monday = new Date(date);
-    monday.setDate(date.getDate() - diff);
+  const [startOfWeek, setStartOfWeek] = useState<Date>();
+  const [weekMonDate, setWeekMonDate] = useState<string>();
+  const [weekTueDate, setWeekTueDate] = useState<string>();
+  const [weekWedDate, setWeekWedDate] = useState<string>();
+  const [weekThrsDate, setWeekThrsDate] = useState<string>();
+  const [weekFriDate, setWeekFriDate] = useState<string>();
+  const [weekSatDate, setWeekSatDate] = useState<string>();
+  const [weekSunDate, setWeekSunDate] = useState<string>();
+  /* günlerin hesaplanması ve yerine konulması */
+  const date = new Date();
+  /* sayfa ilk açıldığında tarihimize göre tarihlerin belirlenmesi için */
+  useEffect(() => {
+    const today = date.getDay();
+    const diff =
+      (today + 6) %
+      7; /* eğer gün pazartesiyse 0, çünkü getDay haftayı pazardan başlatıyor */
+    date.setDate(date.getDate() - diff);
+    setStartOfWeek(date);
+    setWeekMonDate(date.toLocaleDateString().split("T")[0]);
+    const tue = new Date();
+    const wed = new Date();
+    const thrs = new Date();
+    const fri = new Date();
+    const sat = new Date();
+    const sun = new Date();
+    const weekDays = [tue, wed, thrs, fri, sat, sun];
 
-    const dates = [];
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(monday);
-      currentDate.setDate(monday.getDate() + i);
-      dates.push(currentDate.toLocaleDateString());
-    }
-    return dates;
+    let i = 0;
+    weekDays.forEach((weekday) => {
+      weekday.setDate(date.getDate() + i + 1);
+      i++;
+    });
+    setWeekTueDate(tue.toLocaleDateString().split("T")[0]);
+    setWeekWedDate(wed.toLocaleDateString().split("T")[0]);
+    setWeekThrsDate(thrs.toLocaleDateString().split("T")[0]);
+    setWeekFriDate(fri.toLocaleDateString().split("T")[0]);
+    setWeekSatDate(sat.toLocaleDateString().split("T")[0]);
+    setWeekSunDate(sun.toLocaleDateString().split("T")[0]);
   }, []);
 
-  const [
-    weekMonDate,
-    weekTueDate,
-    weekWedDate,
-    weekThrsDate,
-    weekFriDate,
-    weekSatDate,
-    weekSunDate,
-  ] = weekDates;
-
-  function weekForward() {}
   function weekBackward() {}
+  function weekForward() {}
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -94,8 +108,7 @@ export default function WeeklyView() {
           <div className="flex flex-col gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekMonDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekMonDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -113,8 +126,7 @@ export default function WeeklyView() {
           <div className="flex flex-row gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekTueDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekTueDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -132,8 +144,7 @@ export default function WeeklyView() {
           <div className="flex flex-row gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekWedDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekWedDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -151,8 +162,7 @@ export default function WeeklyView() {
           <div className="flex flex-row gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekThrsDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekThrsDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -170,8 +180,7 @@ export default function WeeklyView() {
           <div className="flex flex-row gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekFriDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekFriDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -189,8 +198,7 @@ export default function WeeklyView() {
           <div className="flex flex-col gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekSatDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekSatDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
@@ -207,8 +215,7 @@ export default function WeeklyView() {
           <div className="flex flex-row gap-2">
             {tasks
               .filter(
-                (t: Task) =>
-                  t.dueDate.toLocaleDateString().split("T")[0] === weekSunDate
+                (t: Task) => t.dueDate.toLocaleDateString() === weekSunDate
               )
               .map((task: Task) => (
                 <WeeklyViewTask key={task._id} task={task} />
