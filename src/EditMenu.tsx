@@ -107,7 +107,7 @@ export default function EditMenu({ editFunction }: any) {
                 className="w-full bg-white/50 dark:text-white dark:bg-gray-950/50 backdrop-blur-2xl rounded-lg p-2"
                 value={tempDesc}
                 onChange={(e) => {
-                  setTempDesc(e.target.value);
+                  setTempDesc(e.target.value.trim());
                 }}
               />
             </div>

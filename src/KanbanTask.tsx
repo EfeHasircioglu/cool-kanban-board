@@ -84,7 +84,7 @@ export default function KanbanTask({
           </Menu>
         </div>
         <div ref={setNodeRef} {...listeners} {...attributes}>
-          <div className="font-semibold text-l mr-2">{title}</div>
+          <div className="font-semibold text-l mr-6 break-words">{title}</div>
           <div className="text-sm">{date.toLocaleDateString()}</div>
         </div>
         <div>

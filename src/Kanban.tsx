@@ -85,7 +85,7 @@ export default function Kanban() {
                 {tasks
                   .filter(
                     (task: Task) =>
-                      task.state === "done" && task.dueDate < today
+                      task.state === "done" && task.dueDate > today
                   )
                   .map((task: Task) => (
                     <motion.div key={task._id}>

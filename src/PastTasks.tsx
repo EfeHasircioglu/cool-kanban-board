@@ -21,7 +21,7 @@ export default function PastTasks() {
     >
       <div className="px-5 flex flex-col gap-2">
         {tasks
-          .filter((tsk) => tsk.dueDate > today && tsk.state === "done")
+          .filter((tsk) => tsk.dueDate < today && tsk.state === "done")
           .map((t) => (
             <div
               className="flex flex-col gap-1 px-2 py-3 bg-white dark:bg-gray-950 dark:text-white rounded-2xl shadow-2xl"

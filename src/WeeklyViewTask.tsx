@@ -52,7 +52,9 @@ export default function WeeklyViewTask({ task }: any) {
                   <button
                     onClick={() => {
                       removeTask(task);
-                      toast(<div className="font-bold">Item deleted</div>);
+                      toast(<div className="font-bold">Item deleted</div>, {
+                        icon: "🗑️",
+                      });
                     }}
                     className="block cursor-pointer dark:data-focus:bg-red-400/10 data-focus:bg-red-700/10 px-2 rounded-md w-full text-left"
                   >
