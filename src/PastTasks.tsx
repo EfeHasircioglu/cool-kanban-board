@@ -20,6 +20,11 @@ export default function PastTasks() {
       className="mt-6"
     >
       <div className="px-5 flex flex-col gap-2">
+        {tasks.length === 0 && (
+          <div className="dark:text-white text-black text-lg">
+            There are no completed tasks.
+          </div>
+        )}
         {tasks
           .filter((tsk) => tsk.dueDate < today && tsk.state === "done")
           .map((t) => (
