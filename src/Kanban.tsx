@@ -29,10 +29,10 @@ export default function Kanban() {
         exit={{ opacity: 0 }}
       >
         <div className="px-5 py-10">
-          <div className="grid grid-cols-3 gap-3 w-full font-header">
+          <div className="md:grid md:grid-cols-3 flex flex-row gap-3 overflow-auto w-full font-header">
             <div
               ref={setTodoDroppableRef}
-              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+              className="bg-white/50 dark:bg-gray-950/50 w-full dark:text-white min-w-[10rem] z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
             >
               <div className="mb-1 p-1.5">To-Do</div>
               <div className="font-sans flex flex-col gap-2">
@@ -55,7 +55,7 @@ export default function Kanban() {
 
             <div
               ref={setInprogressDroppableRef}
-              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+              className="bg-white/50 dark:bg-gray-950/50 w-full dark:text-white min-w-[10rem] z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
             >
               <div className="mb-1 p-1.5">In Progress</div>
               <div className="font-sans flex flex-col gap-2">
@@ -78,7 +78,7 @@ export default function Kanban() {
 
             <div
               ref={setDoneDroppableRef}
-              className="bg-[#fff1e6]/50 z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
+              className="bg-white/50 dark:bg-gray-950/50 w-full dark:text-white min-w-[10rem] z-10 backdrop-blur-2xl h-auto p-1.5 rounded-lg"
             >
               <div className="mb-1 p-1.5">Done</div>
               <div className="font-sans flex flex-col gap-2">

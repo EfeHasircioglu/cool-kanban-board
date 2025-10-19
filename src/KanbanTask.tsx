@@ -28,15 +28,16 @@ export default function KanbanTask({
   return (
     <>
       <div
-        className={`flex flex-col gap-1 p-2 bg-white w-full shadow-lg rounded-lg ${
-          isOverlay && "bg-white/50 backdrop-blur-sm border-2 border-dashed"
+        className={`flex flex-col gap-1 p-2 bg-white dark:bg-black dark:text-white w-full shadow-lg rounded-lg ${
+          isOverlay &&
+          "bg-white/50 dark:bg-black/60 backdrop-blur-sm border-2 border-dashed dark:border-black"
         }`}
       >
         <div className="fixed right-0 h-min w-min border-none outline-none">
           <Menu>
             <MenuButton>
               <svg
-                className="absolute top-0 right-3 p-1 w-6 h-6 rounded-lg cursor-pointer active:bg-black/15 hover:bg-black/10"
+                className="absolute top-0 right-3 p-1 w-6 h-6 rounded-lg cursor-pointer dark:active:bg-white/15 dark:hover:bg-white/10 active:bg-black/15 hover:bg-black/10"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -52,7 +53,7 @@ export default function KanbanTask({
             <Transition>
               <MenuItems
                 anchor="bottom"
-                className="mt-3 z-1000 transition-all duration-100 origin-top-left ease-in data-closed:opacity-0 data-closed:scale-90 mx-3 bg-white/60 backdrop-blur-2xl text-black rounded-lg outline-none shadow-2xl border-none p-0.75"
+                className="mt-3 z-1000 transition-all duration-100 origin-top-left ease-in data-closed:opacity-0 data-closed:scale-90 mx-3 bg-white/60 dark:bg-black/60 dark:text-white backdrop-blur-2xl text-black rounded-lg outline-none shadow-2xl border-none p-0.75"
               >
                 <MenuItem>
                   <button
@@ -60,7 +61,7 @@ export default function KanbanTask({
                       setEditingTask(task);
                       setIsEditOpen(true);
                     }}
-                    className="block cursor-pointer data-focus:bg-black/10 px-2 rounded-md w-full text-left"
+                    className="block cursor-pointer dark:data-focus:bg-white/10 data-focus:bg-black/10 px-2 rounded-md w-full text-left"
                   >
                     Edit
                   </button>
@@ -69,9 +70,11 @@ export default function KanbanTask({
                   <button
                     onClick={() => {
                       removeTask(task);
-                      toast(<div className="font-bold">Item deleted</div>);
+                      toast("Item deleted", {
+                        icon: "🗑️",
+                      });
                     }}
-                    className="block cursor-pointer data-focus:bg-red-700/10 px-2 rounded-md w-full text-left"
+                    className="block cursor-pointer dark:data-focus:bg-red-400/10 data-focus:bg-red-700/10 px-2 rounded-md w-full text-left"
                   >
                     Delete
                   </button>
@@ -93,7 +96,7 @@ export default function KanbanTask({
                 defaultOpen={false}
               >
                 <DisclosureButton>
-                  <span className="text-sm/6 flex flex-row items-center gap-1 hover:bg-black/10 active:bg-black/15 cursor-pointer px-1 rounded-lg font-medium">
+                  <span className="text-sm/6 flex flex-row items-center gap-1 dark:hover:bg-white/10 dark:active:bg-white/15 hover:bg-black/10 active:bg-black/15 cursor-pointer px-1 rounded-lg font-medium">
                     <div>Description</div>
                     <svg
                       className="w-4 h-4"

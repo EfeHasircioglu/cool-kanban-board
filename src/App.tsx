@@ -10,6 +10,7 @@ import type { Task } from "./taskDb";
 import KanbanTask from "./KanbanTask";
 import { AnimatePresence, motion } from "motion/react";
 import DatePicker from "react-datepicker";
+import PastTasks from "./PastTasks";
 import { db } from "./taskDb";
 import {
   Popover,
@@ -30,11 +31,7 @@ import {
   MouseSensor,
 } from "@dnd-kit/core";
 import { useLiveQuery } from "dexie-react-hooks";
-//TODO: weekly view'deki tasklar için editleme ve silme
-//TODO: weekly view hafta geçişleri ve ona göre render
-//TODO?: belki weekly view'de de drag & drop
-//TODO: normal task list görünümünde olan bir kısım (ve orada tasklar farklı şekillerde filtrelenebiliyor)
-//TODO: dark mode
+//TODO:
 function App() {
   /* bazı küçük şeyler için state'ler */
   const [location, setLocation] = useLocation();
@@ -58,7 +55,7 @@ function App() {
       <button
         onClick={onClick}
         ref={ref}
-        className="bg-white/20 hover:bg-white/10 p-1 rounded-lg cursor-pointer"
+        className="bg-white/20 hover:bg-white/10 dark:bg-black/30 dark:hover:bg-black/20 dark:text-white p-1 rounded-lg cursor-pointer"
         title="Set Date"
       >
         <svg
@@ -97,7 +94,9 @@ function App() {
   function goToWeekly() {
     setLocation("/weekly");
   }
-
+  function goToPastTasks() {
+    setLocation("/past-tasks");
+  }
   /* eğer add modal kapanırsa veya yeni bir task eklenirse içindekiler temizlensin */
   useEffect(() => {
     setTaskNameValue("");
@@ -201,7 +200,7 @@ function App() {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
-        className="fixed top-0 left-0 h-screen w-screen max-h-none -z-1"
+        className="fixed top-0 left-0 h-screen w-screen max-h-none -z-1 transition-all duration-500 dark:hue-rotate-180"
         id="visual"
         viewBox="0 0 900 900"
         width="900"
@@ -239,11 +238,13 @@ function App() {
             <button
               title="Kanban View"
               onClick={() => goToKanban()}
-              className={`bg-white/20 ${
-                location === "/kanban" ? "border-white/50 border-1" : ""
-              } hover:bg-white/10 p-1 m-2 rounded-lg cursor-pointer`}
+              className={`bg-white/20 dark:bg-black/40 ${
+                location === "/kanban"
+                  ? "border-white/50 dark:border-black/50 border-1"
+                  : ""
+              } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
             >
-              <svg className=" h-7" viewBox="0 0 24 24">
+              <svg className=" h-7 dark:text-white/80" viewBox="0 0 24 24">
                 <g fill="none" fillRule="evenodd">
                   <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
                   <path
@@ -256,12 +257,14 @@ function App() {
             <button
               title="Weekly View"
               onClick={() => goToWeekly()}
-              className={`bg-white/20 hover:bg-white/10 p-1 my-2 rounded-lg cursor-pointer ${
-                location === "/weekly" ? "border-white/50 border-1" : ""
+              className={`bg-white/20 dark:bg-black/40 hover:bg-white/10 dark:hover:bg-black/50 p-1 my-2 rounded-lg cursor-pointer ${
+                location === "/weekly"
+                  ? "border-white/50 dark:border-black/50 border-1"
+                  : ""
               }`}
             >
               <svg
-                className=" h-7"
+                className=" h-7 dark:text-white/80"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -270,6 +273,29 @@ function App() {
                   <path
                     fill="currentColor"
                     d="M19 3a2 2 0 0 1 1.995 1.85L21 5v14a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm0 2H5v14h14zM8 7a1 1 0 0 1 .993.883L9 8v8a1 1 0 0 1-1.993.117L7 16V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 .993.883L17 8v8a1 1 0 0 1-1.993.117L15 16V8a1 1 0 0 1 1-1"
+                  />
+                </g>
+              </svg>
+            </button>
+            <button
+              title="Past Tasks"
+              onClick={() => goToPastTasks()}
+              className={`bg-white/20 dark:bg-black/40 ${
+                location === "/past-tasks"
+                  ? "border-white/50 dark:border-black/50 border-1"
+                  : ""
+              } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+            >
+              <svg
+                className="h-7 dark:text-white/80"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <g fill="none" fill-rule="evenodd">
+                  <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                  <path
+                    fill="currentColor"
+                    d="M10.975 3.002a1 1 0 0 1-.754 1.196a8 8 0 0 0-.583.156a1 1 0 0 1-.59-1.911q.36-.112.73-.195a1 1 0 0 1 1.197.754m2.05 0a1 1 0 0 1 1.196-.754c4.454 1.01 7.78 4.992 7.78 9.752c0 5.523-4.478 10-10 10c-4.761 0-8.743-3.325-9.753-7.779a1 1 0 0 1 1.95-.442a8 8 0 1 0 9.58-9.58a1 1 0 0 1-.753-1.197M6.614 4.72a1 1 0 0 1-.053 1.414q-.222.205-.427.426A1 1 0 0 1 4.668 5.2q.255-.276.532-.533a1 1 0 0 1 1.414.053M12 6a1 1 0 0 1 1 1v4.586l2.707 2.707a1 1 0 0 1-1.414 1.414l-3-3A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1M3.693 8.388a1 1 0 0 1 .661 1.25a8 8 0 0 0-.156.583a1 1 0 0 1-1.95-.442q.084-.37.195-.73a1 1 0 0 1 1.25-.661"
                   />
                 </g>
               </svg>
@@ -318,7 +344,7 @@ function App() {
                         name="task-name-cool-kanban"
                         type="text"
                         placeholder="Task Name"
-                        className={`rounded-lg p-1 max-h-[36px] bg-white/20 hover:bg-white/10 font-bold ${
+                        className={`rounded-lg p-1 max-h-[36px] bg-white/20 dark:bg-black/30 dark:hover:bg-black/10 dark:text-white hover:bg-white/10 font-bold ${
                           titleError && "border-1 border-red-500 "
                         }`}
                       />
@@ -329,7 +355,7 @@ function App() {
                       )}
                     </div>
                     <DatePicker
-                      className="absolute"
+                      className="absolute "
                       selected={selectedDate}
                       onChange={(date: Date | null) => setSelectedDate(date)}
                       customInput={
@@ -338,11 +364,11 @@ function App() {
                     />
                     <Popover>
                       <PopoverButton
-                        className="bg-white/20 hover:bg-white/10 p-1 rounded-lg cursor-pointer max-h-[36px]"
+                        className="bg-white/20 hover:bg-white/10 dark:bg-black/30 dark:hover:bg-black/10 dark:text-white p-1 rounded-lg cursor-pointer max-h-[36px]"
                         title="Set Description"
                       >
                         <svg
-                          className="w-7 h-7"
+                          className="w-7 h-7 dark:text-white"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                         >
@@ -360,7 +386,7 @@ function App() {
                           onChange={(e) => setTaskDescValue(e.target.value)}
                           value={taskDescValue}
                           placeholder="Task Description"
-                          className={`bg-white/30 p-2 text-sm outline-0 font-bold backdrop-blur-2xl rounded-lg mt-3`}
+                          className={`bg-white/30 dark:bg-black/40 p-2 text-sm outline-0 font-bold backdrop-blur-2xl z-1000 rounded-lg mt-3`}
                           name="description-text-kanban-area"
                         ></textarea>
                       </PopoverPanel>
@@ -374,12 +400,12 @@ function App() {
                           setTitleError("Title is required");
                         }
                       }}
-                      className="bg-white/20 hover:bg-white/10 p-1 rounded-lg cursor-pointer max-h-[36px]"
+                      className="bg-white/20 hover:bg-white/10 dark:bg-black/30 dark:hover:bg-black/20 p-1 rounded-lg cursor-pointer max-h-[36px]"
                       title="Confirm Task Addition"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-7 h-7"
+                        className="w-7 h-7 dark:text-white"
                         viewBox="0 0 24 24"
                       >
                         <g fill="none" fillRule="evenodd">
@@ -398,7 +424,7 @@ function App() {
 
             <button
               onClick={() => setIsAddOpen((prev) => !prev)}
-              className="bg-white/20 hover:bg-white/10 p-1 rounded-lg cursor-pointer backdrop-blur-2xl max-h-[36px]"
+              className="bg-white/20 hover:bg-white/10 dark:bg-black/30 dark:hover:bg-black/20 dark:text-white p-1 rounded-lg cursor-pointer backdrop-blur-2xl max-h-[36px]"
               title="Add Task"
             >
               <svg
@@ -423,12 +449,12 @@ function App() {
           className="relative z-50"
         >
           <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-            <DialogPanel className="max-w-lg space-y-4 bg-white/30 backdrop-blur-2xl rounded-lg p-12">
+            <DialogPanel className="max-w-lg space-y-4 bg-white/30 dark:bg-black/30 dark:text-white backdrop-blur-2xl rounded-lg p-12">
               <DialogTitle className="font-bold">Error!</DialogTitle>
               <p>{error}</p>
               <div className="flex gap-4">
                 <button
-                  className="bg-white p-2 rounded-lg cursor-pointer px-4"
+                  className="bg-white dark:bg-black dark:text-white p-2 rounded-lg cursor-pointer px-4"
                   onClick={() => clearError("")}
                 >
                   OK
@@ -448,6 +474,7 @@ function App() {
               <Switch key={location}>
                 <Route path="/kanban" component={Kanban}></Route>
                 <Route path="/weekly" component={WeeklyView}></Route>
+                <Route path="/past-tasks" component={PastTasks}></Route>
               </Switch>
             </AnimatePresence>
             <DragOverlay dropAnimation={null}>
@@ -468,7 +495,11 @@ function App() {
       <AnimatePresence>
         {isEditOpen && <EditMenu editFunction={editTask} />}
       </AnimatePresence>
-      <Toaster></Toaster>
+      <Toaster
+        toastOptions={{
+          className: "dark:bg-black dark:text-white",
+        }}
+      ></Toaster>
     </div>
   );
 }

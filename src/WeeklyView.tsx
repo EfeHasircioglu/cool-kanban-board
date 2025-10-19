@@ -7,7 +7,7 @@ import WeeklyViewTask from "./WeeklyViewTask";
 export default function WeeklyView() {
   const rawTasks = useLiveQuery(() => db.tasks.toArray()) || [];
   const tasks: Task[] = useMemo(() => rawTasks, [rawTasks]);
-  const [startOfWeek, setStartOfWeek] = useState<Date>();
+  const [weekOffset, setWeekOffset] = useState(0); // Hafta offset'i (0 = bu hafta, -1 = geçen hafta, +1 = gelecek hafta)
   const [weekMonDate, setWeekMonDate] = useState<string>();
   const [weekTueDate, setWeekTueDate] = useState<string>();
   const [weekWedDate, setWeekWedDate] = useState<string>();
@@ -16,39 +16,48 @@ export default function WeeklyView() {
   const [weekSatDate, setWeekSatDate] = useState<string>();
   const [weekSunDate, setWeekSunDate] = useState<string>();
   /* günlerin hesaplanması ve yerine konulması */
-  const date = new Date();
-  /* sayfa ilk açıldığında tarihimize göre tarihlerin belirlenmesi için */
+
   useEffect(() => {
-    const today = date.getDay();
+    const today = new Date().getDay();
     const diff =
       (today + 6) %
-      7; /* eğer gün pazartesiyse 0, çünkü getDay haftayı pazardan başlatıyor */
-    date.setDate(date.getDate() - diff);
-    setStartOfWeek(date);
-    setWeekMonDate(date.toLocaleDateString().split("T")[0]);
-    const tue = new Date();
-    const wed = new Date();
-    const thrs = new Date();
-    const fri = new Date();
-    const sat = new Date();
-    const sun = new Date();
-    const weekDays = [tue, wed, thrs, fri, sat, sun];
+      7; /* bugün ile pazartesi arasındaki gün farkını hesaplıyor, buna göre haftayı render ediyoruz */
+    const baseDate = new Date();
+    baseDate.setDate(
+      baseDate.getDate() - diff + weekOffset * 7
+    ); /* her weekoffset değiştiğinde useEffect çalışıyor, eğer günümüze göre bir weekOffset varsa (yani zaman ileri veya geri alınmışsa) o zaman ona göre 7 (haftanın toplamı) ile çarpıp tarihi ileri-geri alma işlemini öyle yapıyor */
+    setWeekMonDate(baseDate.toLocaleDateString());
+    const tue = new Date(baseDate);
+    tue.setDate(baseDate.getDate() + 1);
+    setWeekTueDate(tue.toLocaleDateString());
 
-    let i = 0;
-    weekDays.forEach((weekday) => {
-      weekday.setDate(date.getDate() + i + 1);
-      i++;
-    });
-    setWeekTueDate(tue.toLocaleDateString().split("T")[0]);
-    setWeekWedDate(wed.toLocaleDateString().split("T")[0]);
-    setWeekThrsDate(thrs.toLocaleDateString().split("T")[0]);
-    setWeekFriDate(fri.toLocaleDateString().split("T")[0]);
-    setWeekSatDate(sat.toLocaleDateString().split("T")[0]);
-    setWeekSunDate(sun.toLocaleDateString().split("T")[0]);
-  }, []);
+    const wed = new Date(baseDate);
+    wed.setDate(baseDate.getDate() + 2);
+    setWeekWedDate(wed.toLocaleDateString());
 
-  function weekBackward() {}
-  function weekForward() {}
+    const thrs = new Date(baseDate);
+    thrs.setDate(baseDate.getDate() + 3);
+    setWeekThrsDate(thrs.toLocaleDateString());
+
+    const fri = new Date(baseDate);
+    fri.setDate(baseDate.getDate() + 4);
+    setWeekFriDate(fri.toLocaleDateString());
+
+    const sat = new Date(baseDate);
+    sat.setDate(baseDate.getDate() + 5);
+    setWeekSatDate(sat.toLocaleDateString());
+
+    const sun = new Date(baseDate);
+    sun.setDate(baseDate.getDate() + 6);
+    setWeekSunDate(sun.toLocaleDateString());
+  }, [weekOffset]);
+
+  function weekBackward() {
+    setWeekOffset((prev) => prev - 1);
+  }
+  function weekForward() {
+    setWeekOffset((prev) => prev + 1);
+  }
 
   return (
     <motion.div
@@ -61,10 +70,10 @@ export default function WeeklyView() {
         <button
           title="Next Week"
           onClick={() => weekBackward()}
-          className="bg-[#fff1e6]/75 h-auto p-1.5 rounded-lg font-header font-semibold cursor-pointer hover:bg-[#fff1e6]/65 active:bg-[#fff1e6]/50"
+          className="bg-[#fff1e6]/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 h-auto p-1.5 rounded-lg font-header font-semibold cursor-pointer hover:bg-[#fff1e6]/65 active:bg-[#fff1e6]/50"
         >
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 dark:text-white"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -80,10 +89,10 @@ export default function WeeklyView() {
         <button
           title="Next Week"
           onClick={() => weekForward()}
-          className="bg-[#fff1e6]/75 h-auto p-1.5 rounded-lg font-header font-semibold cursor-pointer hover:bg-[#fff1e6]/65 active:bg-[#fff1e6]/50"
+          className="bg-[#fff1e6]/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 h-auto p-1.5 rounded-lg font-header font-semibold cursor-pointer hover:bg-[#fff1e6]/65 active:bg-[#fff1e6]/50"
         >
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 dark:text-white"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -97,12 +106,12 @@ export default function WeeklyView() {
           </svg>
         </button>
       </div>
-      <div className="lg:grid lg:grid-cols-7 mt-2 m-5 lg:gap-2 flex flex-col gap-4">
+      <div className="sm:grid lg:grid-cols-7 mt-2 m-5 lg:gap-2 sm:grid-cols-2 flex flex-col md:grid-cols-3 gap-4">
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekMonDate}
           </div>
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Mon
           </div>
           <div className="flex flex-col gap-2">
@@ -116,11 +125,11 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekTueDate}
           </div>
 
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Tue
           </div>
           <div className="flex flex-row gap-2">
@@ -134,11 +143,11 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekWedDate}
           </div>
 
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Wed
           </div>
           <div className="flex flex-row gap-2">
@@ -152,11 +161,11 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekThrsDate}
           </div>
 
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Thrs
           </div>
           <div className="flex flex-row gap-2">
@@ -170,11 +179,11 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekFriDate}
           </div>
 
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Fri
           </div>
           <div className="flex flex-row gap-2">
@@ -188,11 +197,11 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekSatDate}
           </div>
 
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Sat
           </div>
           <div className="flex flex-col gap-2">
@@ -206,10 +215,10 @@ export default function WeeklyView() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg font-header font-semibold">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg font-header font-semibold">
             {weekSunDate}
           </div>
-          <div className="bg-[#fff1e6]/75 h-auto p-2 rounded-lg text-sm">
+          <div className="bg-white/75 dark:bg-gray-950/75 dark:hover:bg-gray-950/65 dark:active:bg-gray-950/50 dark:text-white h-auto p-2 rounded-lg text-sm">
             Sun
           </div>
           <div className="flex flex-row gap-2">

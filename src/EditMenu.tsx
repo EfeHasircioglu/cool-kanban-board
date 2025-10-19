@@ -42,20 +42,20 @@ export default function EditMenu({ editFunction }: any) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex flex-col w-screen h-screen top-0 left-0 bg-black/50 z-1000"
+      className="fixed inset-0 flex flex-col w-screen h-screen top-0 left-0 bg-gray-950/50 shadow-2xl dark:bg-gray-950/50 z-1000"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.9, rotateX: -10 }}
         animate={{ opacity: 1, scale: 1, rotateX: 0 }}
         exit={{ opacity: 0, scale: 0.9, rotateX: -10 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="w-[50%] h-[50½] bg-[#fff1e6]/50 backdrop-blur-2xl shadow-2xl rounded-lg m-auto max-w-[500px]"
+        className="w-[50%] h-[50½] bg-white/50 dark:bg-gray-950/50 backdrop-blur-2xl shadow-2xl rounded-lg m-auto max-w-[500px]"
       >
         <div className="py-2 px-3">
           <div>
             {" "}
             <div className="flex flex-row justify-between w-full mb-3">
-              <div className="font-bold text-lg">Edit Task</div>
+              <div className="font-bold text-lg dark:text-white">Edit Task</div>
               <button
                 onClick={() => {
                   setIsEditOpen(false);
@@ -63,7 +63,7 @@ export default function EditMenu({ editFunction }: any) {
                 }}
               >
                 <svg
-                  className="text-black w-6 h-6 rounded-lg cursor-pointer active:bg-black/15 hover:bg-black/10 p-1"
+                  className="text-black dark:text-white dark:active:bg-white/15 dark:hover:bg-white/10 w-6 h-6 rounded-lg cursor-pointer active:bg-black/15 hover:bg-black/10 p-1"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
@@ -82,10 +82,10 @@ export default function EditMenu({ editFunction }: any) {
           </div>
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
-              <div className="text-sm ml-1">Title</div>
+              <div className="text-sm ml-1 dark:text-white">Title</div>
               <input
                 id="edit-title"
-                className={`w-full bg-white/50 backdrop-blur-2xl rounded-lg p-2 ${
+                className={`w-full bg-white/50 dark:text-white dark:bg-gray-950/50 backdrop-blur-2xl rounded-lg p-2 ${
                   titleError && "border-1 border-red-500"
                 }`}
                 type="text"
@@ -101,10 +101,10 @@ export default function EditMenu({ editFunction }: any) {
               )}
             </div>
             <div className="flex flex-col gap-1">
-              <div className="text-sm ml-1">Description</div>
+              <div className="text-sm ml-1 dark:text-white">Description</div>
               <textarea
                 id="edit-desc"
-                className="w-full bg-white/50 backdrop-blur-2xl rounded-lg p-2"
+                className="w-full bg-white/50 dark:text-white dark:bg-gray-950/50 backdrop-blur-2xl rounded-lg p-2"
                 value={tempDesc}
                 onChange={(e) => {
                   setTempDesc(e.target.value);
@@ -112,10 +112,10 @@ export default function EditMenu({ editFunction }: any) {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <div className="text-sm ml-1">Due Date</div>
+              <div className="text-sm ml-1 dark:text-white">Due Date</div>
               <input
                 id="edit-duedate"
-                className="w-full bg-white/50 backdrop-blur-2xl rounded-lg p-2"
+                className="w-full bg-white/50 dark:text-white dark:bg-gray-950/50 backdrop-blur-2xl rounded-lg p-2"
                 type="date"
                 value={tempDate}
                 onChange={(e) => {
@@ -132,7 +132,7 @@ export default function EditMenu({ editFunction }: any) {
                     setEditingTask(undefined);
                   }
                 }}
-                className="bg-white/50 hover:bg-white/30 py-2 rounded-lg cursor-pointer px-3"
+                className="bg-white/50 dark:bg-gray-950/50 dark:hover:bg-gray-950/30 dark:text-white hover:bg-white/30 py-2 rounded-lg cursor-pointer px-3"
               >
                 Edit
               </button>
