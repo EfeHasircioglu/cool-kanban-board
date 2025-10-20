@@ -31,7 +31,7 @@ import {
   MouseSensor,
 } from "@dnd-kit/core";
 import { useLiveQuery } from "dexie-react-hooks";
-//TODO:
+//TODO: maybe a toast when a task qualifies for being a past task
 function App() {
   /* bazı küçük şeyler için state'ler */
   const [location, setLocation] = useLocation();
