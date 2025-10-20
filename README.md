@@ -2,7 +2,11 @@
 This is a kanban board app that also has a weekly view!
 ## [Demo](https://cool-kanban-board.vercel.app/)
 ### Demo video
-https://github.com/user-attachments/assets/7595463c-3c52-4d43-931c-46c253f0b943
+
+
+https://github.com/user-attachments/assets/c2e5bc92-47b5-464b-a9b1-093a0253bcb3
+
+
 **It was built using:** 
 - TypeScript + React.js
 - Zustand (for state management)
