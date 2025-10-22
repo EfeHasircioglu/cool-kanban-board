@@ -1,73 +1,40 @@
-# React + TypeScript + Vite
+# Cool Kanban Board
+This is a kanban board app that also has a weekly view!
+## [Demo](https://cool-kanban-board.vercel.app/)
+### Demo video
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+https://github.com/user-attachments/assets/c2e5bc92-47b5-464b-a9b1-093a0253bcb3
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+**It was built using:** 
+- TypeScript + React.js
+- Zustand (for state management)
+- IndexedDB (for permanent data storage)
+- wouter (for routing between kanban, weekly and past views)
+- dnd-kit (for kanban board drag & drop)
+- Framer Motion (for smooth animations)
+- Tailwind + Headless UI (for styling and some components)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Main features of the app
 
-## Expanding the ESLint configuration
+**1. Kanban Board** 
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+  The kanban board is the main interface of the app, allowing users to change the status of their tasks, edit, delete and view them. If a task is due and completed, it gets removed from the main view and placed to past tasks.
+  
+**2. Weekly View**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+  The weekly view of tasks based on their due date. Every task must have a due date, as a date is essential for the general logic of the app. Users can also edit and delete their tasks from the weekly view, but weekly view doesn't have drag & drop support. (yet)
+  
+**3. Past Tasks**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+  This is the place where past tasks (completed and due) are placed. the properties of the tasks (asides from task status, as every task is done) can be seen here.
+  
+### Insights of development process
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- I tried to use useMemo and related solutions as much as possible to optimize the app.
+- There is only one source of truth, and that is the IndexedDB.
+- Zustand is used for almost all of the states, aside from a few local states that handle some small / temporary things.
+- Some animations are made with Framer Motions, others with the Transition component of Headless UI (mostly on Headless UI components themselves)
+- Tailwind's default dark mode handling is used for the handling of light/dark modes, and it changes based on your device's color mode.
+- react-datepicker is used to make a datepicker, tied to a button. (on the adding menu)
