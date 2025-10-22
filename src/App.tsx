@@ -31,6 +31,7 @@ import {
   MouseSensor,
 } from "@dnd-kit/core";
 import { useLiveQuery } from "dexie-react-hooks";
+import { div } from "motion/react-client";
 //TODO: maybe a toast when a task qualifies for being a past task
 function App() {
   /* bazı küçük şeyler için state'ler */
@@ -40,6 +41,8 @@ function App() {
   const [taskDescValue, setTaskDescValue] = useState<string>("");
   const [titleError, setTitleError] = useState<string>("");
   const [droppedTask, setDroppedTask] = useState<Task>();
+  /* sidebarın açıklık-kapanıklığı için bir state */
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   /* tasks içerisinden seçim yapabilmemiz için */
   const rawTasks = useLiveQuery(() => db.tasks.toArray()) || [];
   const tasks: Task[] = useMemo(() => rawTasks, [rawTasks]);
@@ -251,74 +254,200 @@ function App() {
         <div className="flex flex-row justify-between">
           <div className="w-fit">
             <button
-              title="Kanban View"
-              onClick={() => goToKanban()}
-              className={`bg-white/20 dark:bg-black/40 ${
-                location === "/kanban"
-                  ? "border-white/50 dark:border-black/50 border-1"
-                  : ""
-              } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
-            >
-              <svg className=" h-7 dark:text-white/80" viewBox="0 0 24 24">
-                <g fill="none" fillRule="evenodd">
-                  <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-                  <path
-                    fill="currentColor"
-                    d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 2H5v14h14zm-9 1a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 10 17H7.5A1.5 1.5 0 0 1 6 15.5v-8A1.5 1.5 0 0 1 7.5 6zm-.5 2H8v7h1.5zm7-2a1.5 1.5 0 0 1 1.493 1.356L18 7.5v3a1.5 1.5 0 0 1-1.356 1.493L16.5 12H14a1.5 1.5 0 0 1-1.493-1.356L12.5 10.5v-3a1.5 1.5 0 0 1 1.356-1.493L14 6zM16 8h-1.5v2H16z"
-                  />
-                </g>
-              </svg>
-            </button>
-            <button
-              title="Weekly View"
-              onClick={() => goToWeekly()}
-              className={`bg-white/20 dark:bg-black/40 hover:bg-white/10 dark:hover:bg-black/50 p-1 my-2 rounded-lg cursor-pointer ${
-                location === "/weekly"
-                  ? "border-white/50 dark:border-black/50 border-1"
-                  : ""
-              }`}
+              title="Menu"
+              className="hover:bg-white/90 bg-white dark:bg-black dark:hover:bg-black/90 p-1 m-2 rounded-lg cursor-pointer"
+              onClick={() => setIsSidebarOpen((prev) => !prev)}
             >
               <svg
-                className=" h-7 dark:text-white/80"
                 xmlns="http://www.w3.org/2000/svg"
+                className="h-6 dark:text-white/80"
                 viewBox="0 0 24 24"
               >
                 <g fill="none">
-                  <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                  <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
                   <path
                     fill="currentColor"
-                    d="M19 3a2 2 0 0 1 1.995 1.85L21 5v14a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm0 2H5v14h14zM8 7a1 1 0 0 1 .993.883L9 8v8a1 1 0 0 1-1.993.117L7 16V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 .993.883L17 8v8a1 1 0 0 1-1.993.117L15 16V8a1 1 0 0 1 1-1"
+                    d="M20 18a1 1 0 0 1 .117 1.993L20 20H4a1 1 0 0 1-.117-1.993L4 18zm0-7a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2zm0-7a1 1 0 1 1 0 2H4a1 1 0 0 1 0-2z"
                   />
                 </g>
               </svg>
             </button>
-            <button
-              title="Past Tasks"
-              onClick={() => goToPastTasks()}
-              className={`bg-white/20 dark:bg-black/40 ${
-                location === "/past-tasks"
-                  ? "border-white/50 dark:border-black/50 border-1"
-                  : ""
-              } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
-            >
-              <svg
-                className="h-7 dark:text-white/80"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g fill="none" fillRule="evenodd">
-                  <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
-                  <path
-                    fill="currentColor"
-                    d="M10.975 3.002a1 1 0 0 1-.754 1.196a8 8 0 0 0-.583.156a1 1 0 0 1-.59-1.911q.36-.112.73-.195a1 1 0 0 1 1.197.754m2.05 0a1 1 0 0 1 1.196-.754c4.454 1.01 7.78 4.992 7.78 9.752c0 5.523-4.478 10-10 10c-4.761 0-8.743-3.325-9.753-7.779a1 1 0 0 1 1.95-.442a8 8 0 1 0 9.58-9.58a1 1 0 0 1-.753-1.197M6.614 4.72a1 1 0 0 1-.053 1.414q-.222.205-.427.426A1 1 0 0 1 4.668 5.2q.255-.276.532-.533a1 1 0 0 1 1.414.053M12 6a1 1 0 0 1 1 1v4.586l2.707 2.707a1 1 0 0 1-1.414 1.414l-3-3A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1M3.693 8.388a1 1 0 0 1 .661 1.25a8 8 0 0 0-.156.583a1 1 0 0 1-1.95-.442q.084-.37.195-.73a1 1 0 0 1 1.25-.661"
-                  />
-                </g>
-              </svg>
-            </button>
+            {/* //TODO: slide-in, slide-out animasyonu yapılacak  */}
+            {isSidebarOpen && (
+              <div className="absolute shadow-2xl left-0 top-0 h-screen w-screen sm:w-fit bg-white/50 dark:bg-black/50 backdrop-blur-2xl rounded-r-lg z-1000">
+                <div className="mx-2 flex flex-col">
+                  <button
+                    title="Go Back"
+                    onClick={() => setIsSidebarOpen((prev) => !prev)}
+                    className="bg-white/20 w-min dark:bg-black/40 ${
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer"
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2 ">
+                      <svg
+                        className="h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <g fill="none" fill-rule="evenodd">
+                          <path d="M24 0v24H0V0zM12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                          <path
+                            fill="currentColor"
+                            d="M9.098 4.488C10.168 3.417 12 4.175 12 5.69V8h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-8v2.31c0 1.515-1.831 2.273-2.902 1.202l-6.453-6.451a1.5 1.5 0 0 1 0-2.122z"
+                          />
+                        </g>
+                      </svg>
+                    </div>
+                  </button>
+                  <button
+                    title="Kanban View"
+                    onClick={() => goToKanban()}
+                    className={`bg-white/20 dark:bg-black/40 ${
+                      location === "/kanban"
+                        ? "border-white/50 dark:border-black/50 border-1"
+                        : ""
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2 ">
+                      <svg
+                        className="h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <g fill="none" fill-rule="evenodd">
+                          <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+                          <path
+                            fill="currentColor"
+                            d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 2H5v14h14zm-9 1a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 10 17H7.5A1.5 1.5 0 0 1 6 15.5v-8A1.5 1.5 0 0 1 7.5 6zm-.5 2H8v7h1.5zm7-2a1.5 1.5 0 0 1 1.493 1.356L18 7.5v3a1.5 1.5 0 0 1-1.356 1.493L16.5 12H14a1.5 1.5 0 0 1-1.493-1.356L12.5 10.5v-3a1.5 1.5 0 0 1 1.356-1.493L14 6zM16 8h-1.5v2H16z"
+                          />
+                        </g>
+                      </svg>
+                      <div className=" dark:text-white/80 flex h-full">
+                        Kanban View
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    title="Weekly View"
+                    onClick={() => goToWeekly()}
+                    className={`bg-white/20 dark:bg-black/40 ${
+                      location === "/weekly"
+                        ? "border-white/50 dark:border-black/50 border-1"
+                        : ""
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2">
+                      <svg
+                        className=" h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <g fill="none">
+                          <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                          <path
+                            fill="currentColor"
+                            d="M19 3a2 2 0 0 1 1.995 1.85L21 5v14a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm0 2H5v14h14zM8 7a1 1 0 0 1 .993.883L9 8v8a1 1 0 0 1-1.993.117L7 16V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1m4 0a1 1 0 0 1 .993.883L17 8v8a1 1 0 0 1-1.993.117L15 16V8a1 1 0 0 1 1-1"
+                          />
+                        </g>
+                      </svg>
+                      <div className=" dark:text-white/80 flex h-full">
+                        Weekly View
+                      </div>
+                    </div>
+                  </button>
+                  {/* TODO: tasks view'de tasklar normal todo list gibi görüntülenecek ve taskları belirli şeylere göre filtreleme opsiyonu falan olacak, buray abaştan bir todo list yapacağız ama edit ve delete'yi çalabiliriz diğer yerlerden tabi  */}
+                  <button
+                    title="Tasks View"
+                    onClick={() => console.log()}
+                    className={`bg-white/20 dark:bg-black/40 ${
+                      location === "/"
+                        ? "border-white/50 dark:border-black/50 border-1"
+                        : ""
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2 ">
+                      <svg
+                        className="h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <g fill="none" fill-rule="evenodd">
+                          <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                          <path
+                            fill="currentColor"
+                            d="M15 2a2 2 0 0 1 1.732 1H18a2 2 0 0 1 2 2v12a5 5 0 0 1-5 5H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h1.268A2 2 0 0 1 9 2zM7 5H6v15h9a3 3 0 0 0 3-3V5h-1a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2m9.238 4.379a1 1 0 0 1 0 1.414l-4.95 4.95a1 1 0 0 1-1.414 0l-2.12-2.122a1 1 0 0 1 1.413-1.414l1.415 1.414l4.242-4.242a1 1 0 0 1 1.414 0M15 4H9v1h6z"
+                          />
+                        </g>
+                      </svg>
+                      <div className=" dark:text-white/80 flex h-full">
+                        Tasks View
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    title="Pomodoro Timer"
+                    onClick={() => console.log()}
+                    className={`bg-white/20 dark:bg-black/40 ${
+                      location === "/"
+                        ? "border-white/50 dark:border-black/50 border-1"
+                        : ""
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2 ">
+                      <svg
+                        className="h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="m20.145 8.27l1.563-1.563l-1.414-1.414L18.586 7c-1.05-.63-2.274-1-3.586-1c-3.859 0-7 3.14-7 7s3.141 7 7 7s7-3.14 7-7a6.97 6.97 0 0 0-1.855-4.73M15 18c-2.757 0-5-2.243-5-5s2.243-5 5-5s5 2.243 5 5s-2.243 5-5 5"
+                        />
+                        <path
+                          fill="currentColor"
+                          d="M14 10h2v4h-2zm-1-7h4v2h-4zM3 8h4v2H3zm0 8h4v2H3zm-1-4h3.99v2H2z"
+                        />
+                      </svg>
+                      <div className=" dark:text-white/80 flex h-full">
+                        Pomodoro Timer
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    title="Past Tasks"
+                    onClick={() => goToPastTasks()}
+                    className={`bg-white/20 dark:bg-black/40 ${
+                      location === "/past-tasks"
+                        ? "border-white/50 dark:border-black/50 border-1"
+                        : ""
+                    } hover:bg-white/10  dark:hover:bg-black/50 p-1 m-2 rounded-lg cursor-pointer`}
+                  >
+                    <div className="flex flex-row p-1 items-center gap-2">
+                      <svg
+                        className="h-7 dark:text-white/80"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <g fill="none" fill-rule="evenodd">
+                          <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z" />
+                          <path
+                            fill="currentColor"
+                            d="M10.975 3.002a1 1 0 0 1-.754 1.196a8 8 0 0 0-.583.156a1 1 0 0 1-.59-1.911q.36-.112.73-.195a1 1 0 0 1 1.197.754m2.05 0a1 1 0 0 1 1.196-.754c4.454 1.01 7.78 4.992 7.78 9.752c0 5.523-4.478 10-10 10c-4.761 0-8.743-3.325-9.753-7.779a1 1 0 0 1 1.95-.442a8 8 0 1 0 9.58-9.58a1 1 0 0 1-.753-1.197M6.614 4.72a1 1 0 0 1-.053 1.414q-.222.205-.427.426A1 1 0 0 1 4.668 5.2q.255-.276.532-.533a1 1 0 0 1 1.414.053M12 6a1 1 0 0 1 1 1v4.586l2.707 2.707a1 1 0 0 1-1.414 1.414l-3-3A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1M3.693 8.388a1 1 0 0 1 .661 1.25a8 8 0 0 0-.156.583a1 1 0 0 1-1.95-.442q.084-.37.195-.73a1 1 0 0 1 1.25-.661"
+                          />
+                        </g>
+                      </svg>
+                      <div className=" dark:text-white/80 flex h-full">
+                        Past Tasks
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+            {/*   */}
             {syncing && (
               <button
                 title="Saving changes to the offline database"
-                className={`bg-black/20 hover:bg-black/10 p-1 my-2 ml-2 rounded-lg cursor-pointer`}
+                className={`bg-black/20 hover:bg-black/10 p-1 my-2 ml-2 rounded-lg cursor-pointer `}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
