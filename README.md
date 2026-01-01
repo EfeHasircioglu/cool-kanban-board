@@ -38,3 +38,6 @@ https://github.com/user-attachments/assets/c2e5bc92-47b5-464b-a9b1-093a0253bcb3
 - Some animations are made with Framer Motions, others with the Transition component of Headless UI (mostly on Headless UI components themselves)
 - Tailwind's default dark mode handling is used for the handling of light/dark modes, and it changes based on your device's color mode.
 - react-datepicker is used to make a datepicker, tied to a button. (on the adding menu)
+
+### Future plans
+- Revamp the UI/UX and polish the animations
